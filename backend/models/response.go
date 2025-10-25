@@ -5,21 +5,8 @@ type ReponseInfo struct {
 	Message string `json:"message"`
 }
 
-type ResponseFailure struct {
+type ResponseMessage struct {
 	Message string `json:"message"`
-}
-
-type ReponseLogin struct {
-	ReponseInfo
-	Data ResponseUser `json:"data"`
-}
-
-type ResponseUser struct {
-	Username string  `json:"username"`
-	FullName string  `json:"full_name"`
-	Email    string  `json:"email"`
-	Avatar   *string `json:"avatar"` // menggunakan arterisk karena dapat bernilai null
-	Token    string  `json:"token"`
 }
 
 type ReponsePostingAll struct {

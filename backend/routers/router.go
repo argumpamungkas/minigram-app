@@ -9,8 +9,10 @@ import (
 func StartServer() *gin.Engine {
 	router := gin.Default()
 
+	// router.Group("/auth", func(ctx *gin.Context) {
 	router.POST("/auth/register", controllers.AuthRegister)
-	router.GET("/auth/user", controllers.GetAllUser)
+	router.POST("/auth/login", controllers.AuthLogin)
+	// })
 
 	return router
 }

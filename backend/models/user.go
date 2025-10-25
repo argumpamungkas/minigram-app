@@ -35,14 +35,15 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-type UserRegister struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type UserLogin struct {
+	Username string `gorm:"column:username" json:"username" valid:"required~Username is Required"`
+	Password string `gorm:"column:password" json:"password" valid:"required~Password is Required"`
 }
 
-type UserLogin struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type ResponseUser struct {
+	Username string  `json:"username"`
+	FullName *string `json:"full_name"`
+	Email    string  `json:"email"`
+	Avatar   *string `json:"avatar"`
+	Bio      *string `json:"bio"`
 }

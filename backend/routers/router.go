@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"minigram-app-backend/controllers"
+	"minigram-app-backend/controllers/auth_controller"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,8 +11,8 @@ func StartServer() *gin.Engine {
 
 	authGroup := router.Group("/auth")
 	{
-		authGroup.POST("/register", controllers.AuthRegister)
-		authGroup.POST("/login", controllers.AuthLogin)
+		authGroup.POST("/register", auth_controller.AuthRegister)
+		authGroup.POST("/login", auth_controller.AuthLogin)
 	}
 
 	return router

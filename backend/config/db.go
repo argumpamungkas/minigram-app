@@ -1,4 +1,4 @@
-package repository
+package config
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ var (
 	err error
 )
 
-func StartDB() {
+func ConnectDatabase() {
 	// LOAD FILE .ENV
 	err = godotenv.Load(".env")
 	if err != nil {

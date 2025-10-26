@@ -1,12 +1,12 @@
-package controllers
+package auth_controller
 
 import (
 	"fmt"
 	"log"
 	"math/rand"
+	"minigram-app-backend/config"
 	"minigram-app-backend/helpers"
 	"minigram-app-backend/models"
-	"minigram-app-backend/repository"
 	"net/http"
 	"time"
 
@@ -14,20 +14,31 @@ import (
 )
 
 func generateApiKey() (apiKey string) {
+	// source akan selalu berubah2
 	source := rand.NewSource(time.Now().UnixNano())
+
+	// ambil random dari source
 	random := rand.New(source)
 
+	// min & max length
 	minL := 18
 	maxL := 32
 
+	// data random diambil dari antara 18 -32
 	randomNumber := random.Intn(maxL-minL+1) + minL
+
+	// charset dari a-z A-Z 1-0
 	charset := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 
+	// buat string sebanyak random number
 	stringRandom := make([]byte, rand.Intn(randomNumber))
 	for i := range stringRandom {
 		stringRandom[i] = charset[rand.Intn(len(charset))]
 	}
-	return apiKey
+
+	// kembalikan
+	apiKey = string(stringRandom)
+	return
 }
 
 func AuthRegister(ctx *gin.Context) {
@@ -37,7 +48,7 @@ func AuthRegister(ctx *gin.Context) {
 	var count int64
 
 	// get db
-	db := repository.GetDb()
+	db := config.GetDb()
 
 	// check bind yang dikirim client apakah appjson/form
 	// gin sudah otomatis check by content type
@@ -102,7 +113,7 @@ func AuthLogin(ctx *gin.Context) {
 	var responseMsg models.ResponseMessage
 
 	// get db
-	db := repository.GetDb()
+	db := config.GetDb()
 
 	// bind json dan cek apakah ada error ?
 	if err := ctx.ShouldBind(&userLogin); err != nil {

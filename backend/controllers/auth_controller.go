@@ -39,9 +39,10 @@ func AuthRegister(ctx *gin.Context) {
 	// get db
 	db := repository.GetDb()
 
-	// Binding data JSON & checking err
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		responseMsg.Message = fmt.Sprintf("Somethin Wrong %s", err.Error())
+	// check bind yang dikirim client apakah appjson/form
+	// gin sudah otomatis check by content type
+	if err := ctx.ShouldBind(&user); err != nil {
+		responseMsg.Message = fmt.Sprintf("Something Wrong %s", err.Error())
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, responseMsg)
 		return
 	}
@@ -99,28 +100,22 @@ func AuthLogin(ctx *gin.Context) {
 	var user models.User
 	var userLogin models.UserLogin
 	var responseMsg models.ResponseMessage
-	var count int64
 
 	// get db
 	db := repository.GetDb()
 
 	// bind json dan cek apakah ada error ?
-	if err := ctx.ShouldBindJSON(&userLogin); err != nil {
+	if err := ctx.ShouldBind(&userLogin); err != nil {
 		responseMsg.Message = fmt.Sprintf("Something wrong : %s", err.Error())
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, responseMsg)
 		return
 	}
 
 	// cari ke table user berdasarkan username
-	err := db.Debug().Where("username = ?", userLogin.Username).Table("users").Take(&user).Count(&count).Error
+	err := db.Debug().Where("username = ?", userLogin.Username).Model(&user).Take(&user).Error
 	if err != nil {
-		if count > 0 {
-			responseMsg.Message = fmt.Sprintf("Something wrong %v", err.Error())
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, responseMsg)
-		} else {
-			responseMsg.Message = fmt.Sprintf("username not exist")
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, responseMsg)
-		}
+		responseMsg.Message = fmt.Sprintf("User not exist")
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, responseMsg)
 		return
 	}
 
@@ -130,6 +125,17 @@ func AuthLogin(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, responseMsg)
 		return
 	}
+
+	token, err := helpers.GenerateToken(user.Username, user.ApiKey)
+	if err != nil {
+		responseMsg.Message = fmt.Sprintf("Something wrong %v", err.Error())
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, responseMsg)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 
 	// ctx.JSON(http.StatusOK, gin.H{
 	// 	"username":  user.Username,

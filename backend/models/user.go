@@ -16,6 +16,8 @@ type User struct {
 	Password string  `gorm:"column:password" json:"password" valid:"required~Password is Required, minstringlength(8)~Password minimum 8 characters"`
 	Avatar   *string `gorm:"column:avatar" json:"avatar"`
 	Bio      *string `gorm:"column:bio" json:"bio"`
+	ApiKey   string  `gorm:"column:api_key" json:"api_key" `
+	// Posting  []Posting `gorm:"constrait:OnUpdate:CASCADE" json:"posts"`
 }
 
 // Model sebelum create

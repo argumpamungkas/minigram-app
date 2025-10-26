@@ -8,27 +8,37 @@ import (
 )
 
 func HashPassword(s string) (res string) {
-	salt := 8
+	// tingkat acak/kesulitan pwd
+	cost := 10
+
+	// ubah password menjadi byte sliceW
 	password := []byte(s)
-	hash, err := bcrypt.GenerateFromPassword(password, salt)
+
+	// generate password yang sudah menjadi byte, cost / tingkat kesulitan
+	// akan menghasilkan hash dalam bentuk byte slice
+	hash, err := bcrypt.GenerateFromPassword(password, cost)
 	if err != nil {
 		msg := fmt.Sprintf("Error generate pwd %s", err)
 		log.Println(msg)
 		return
 	}
 
+	// ubah byte slice menjadi string dan di assign ke res
 	res = string(hash)
 	return
 }
 
-func ComparePassword(h, p []byte) bool {
-	hash, pass := []byte(h), []byte(p)
+func ComparePassword(hash, pwd []byte) bool {
+	// hash => hash password
+	// pwd => plain text password
+	err := bcrypt.CompareHashAndPassword(hash, pwd)
 
-	err := bcrypt.CompareHashAndPassword(hash, pass)
+	// jika ada err brarti tidak sama
 	if err != nil {
 		log.Println("Invalid password")
 		return false
 	}
 
+	// true jika pwd dan hash isinya sama
 	return true
 }
